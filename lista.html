@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="custom.css">
+
+    <link rel="stylesheet" href="css/mobiscroll.javascript.min.css">
+    <script src="js/mobiscroll.javascript.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    //SCRIPT PARA INICIALIZAR FIREBASE
+    <script src="https://www.gstatic.com/firebasejs/3.7.5/firebase.js"></script>
+    
+    <style>
+ 
+ /* STYLO PARA LA LISTA DE INCIDENTES*/
+
+    button {
+        display: inline-block;
+        outline: 0;
+        border: 0;
+        cursor: pointer;
+        background:#4CAF50;
+        color: #fff;
+        text-decoration: none;
+        font-family: arial, verdana, sans-serif;
+        font-size: 14px;
+           }
+
+    .mbsc-ios.mbsc-form {
+    background: #efeeec;
+        }
+
+    .mbsc-ios.mbsc-page {
+    background: #efeeec; 
+              }
+
+    .button2 {background-color:#4CAF50;} 
+
+    .demo-non-form {
+        color: initial;
+        width: 100%;
+        padding: 10px;
+        margin: 6px 0 12px 0;
+        border: 1px solid #efeeec;
+        border-radius: 0;
+        font-family: arial, verdana, sans-serif;
+        font-size: 14px;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+    }
+    
+    .external-container button.external-button {
+        font-weight: 400;
+        padding: 10px;
+        margin: 6px 0 13px 0;
+        width: 100%;
+    }
+
+   /* STYLO PARA LA IMPRESION DE DATOS */
+
+    @media print {
+
+        @page {
+    size: 30cm 40.7cm;
+    margin: 5mm 5mm 5mm 5mm; /* change the margins as you want them to be. */
+              }
+
+         body *
+           .listado
+            { 
+                 display:block;
+                 background-color: white; 
+                  height: 100%; width: 100%; 
+                  position: absolute; 
+                  top: 0; left: 0; margin: 0;
+                  padding: 15px; 
+                  font-size: 3px; 
+                  line-height: 18px;
+                  
+         } 
+         .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+                 float: left;
+                   }        
+         p {
+    margin: -5px -5px -6px;
+             }
+             .col-md-1 {
+    width: 10.3%;
+}
+.col-md-3 {
+    width: 32.3%;
+}       
+                  }
+
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  position: relative; 
+  top: 80px; 
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+                 
+
+    </style>
+    
+    <title>Lista de incidentes</title>
+
+    <script>
+
+        //FUNCION MOSTRAR LISTA
+
+       function showList()
+        
+ {
+    document.getElementById("loader").style.display = "block";
+    // Inicializar la base de datos
+    var config = {
+        apiKey: "AIzaSyDrm5Kg0O0kcyUFTDq0nnYlS9Eno2P9TNg",
+        authDomain: "serenazgo-b11fd.firebaseapp.com",
+        databaseURL: "https://serenazgo-b11fd.firebaseio.com",
+        projectId: "serenazgo-b11fd",
+        storageBucket: "serenazgo-b11fd.appspot.com",
+        messagingSenderId: "481892388900"
+    };
+
+    firebase.initializeApp(config);
+    var inputVal = document.getElementById("calendar1").value;
+    var inputVal2 = document.getElementById("calendar2").value;
+    var database = firebase.database();
+    //FILTRADO DE DATOS SEGUN LA FECHA AGREGADA
+    var referencia=database.ref("incidents").orderByChild('fecha').startAt(inputVal).endAt(inputVal2) ;
+    //.orderByChild('fecha').startAt('02/10/2020').endAt('10/10/2020') agregar esto
+
+    var incidentes={};
+
+   //NODO DE LA BASE DE DATOS
+    referencia.on('value',function(datos)
+    {
+        incidentes=datos.val();
+
+       
+        $.each(incidentes, function(indice,valor)
+        {
+
+            //SETEAMOS TODOS LOS DATOS EN EL OBJETO
+            var prevIncidente='<div class="row">';
+            prevIncidente+='</div>';
+
+            var prevIncidente='<div class="cell">';
+            prevIncidente+='<div class="col-md-1">';
+            prevIncidente+='<h4><p>'+valor.numFicha+'</p></h4>';
+            prevIncidente+='</div>';
+            prevIncidente+='<div class="col-md-1">';
+            prevIncidente+='<h4><p>'+valor.fecha+'</p></h4>';
+            prevIncidente+='</div>';
+            prevIncidente+='<div class="col-md-1">';
+            prevIncidente+='<h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+valor.hora+'</p></h4>';
+            prevIncidente+='</div>';
+            prevIncidente+='<div class="col-md-3">';
+            prevIncidente+='<h4><p>&nbsp;&nbsp;&nbsp;'+valor.lugarDeOcurrencia+'</p></h4>';
+            prevIncidente+='</div>';
+            prevIncidente+='<div class="col-md-3">';
+            prevIncidente+='<h4><p>&nbsp;'+valor.modalidad+'</p></h4>';
+            prevIncidente+='</div>';
+            prevIncidente+='</div>';
+        
+         
+    
+            prevIncidente+='</div>';
+            prevIncidente+='<div class="row espaciador">';
+            prevIncidente+='</div>';
+            //MOSTRARNDO DATOS FILTRADOS
+            $(prevIncidente).appendTo('#listado');
+            document.getElementById("btnprint").style.display = "block";
+            document.getElementById("btnclean").style.display = "block";
+            document.getElementById("loader").style.display = "none";
+
+        });
+
+    },function(objetoError){
+        console.log('Error de lectura:'+objetoError.code);
+        alert("Error!!");
+    });
+
+    document.getElementById("show").style.display = "none";
+    document.getElementById("contenedor1").style.display = "none";
+    document.getElementById("contenedor2").style.display = "none";
+
+}
+    </script>
+
+    <script>
+         
+    function imprimir()
+     {
+
+        document.getElementById("contenedor3").style.display = "none";
+        document.getElementById("imgsereno").style.display = "none";
+        document.getElementById("imgsereno2").style.display = "block";
+        window.print('');
+     }
+
+    </script>
+
+    // DIV DEL DATE PICKER DIALOG
+
+    <div mbsc-page class="demo-date-time-picker" id="contenedor3">
+        <div style="height:50%">
+            <div mbsc-form>
+              <div class="mbsc-grid mbsc-form-grid">
+                  <div class="mbsc-row">
+                    &nbsp;&nbsp;&nbsp;<img src="logo.png" width="75px" id="imgsereno">
+                     <div class="mbsc-col-sm-12 mbsc-col-md-4">
+                          <label  id="contenedor1">
+                              Fecha Inicial
+                              <input mbsc-input id="calendar1" data-input-style="box" data-label-style="stacked"/>
+                          </label>
+                      </div>
+  
+                      <div class="mbsc-col-sm-12 mbsc-col-md-4">
+                        <label id="contenedor2">
+                            Fecha Final
+                            <input mbsc-input id="calendar2" data-input-style="box" data-label-style="stacked"/>
+                        </label>
+                    </div>
+  
+                    <button class="button button2"  onclick="showList()" id="show">Filtrar fechas</button>
+                    <button class="button button2"  onclick="window.location.reload();" style="display: none; width: 150px; height: 60px;" id="btnclean">Limpiar</button>
+                    <button class="button button2"  onclick="imprimir()" id="btnprint" style="display: none; width: 150px; height: 60px;">Imprimir</button>
+                      
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+
+          // PROPIEDADES DEL DATE PICKER DIALOG (SELECIONADOR DE FECHAS)
+
+      mobiscroll.settings = {
+          lang: 'es',                       // Specify language like: lang: 'pl' or omit setting to use default
+          theme: 'ios',                     // Specify theme like: theme: 'ios' or omit setting to use default
+          themeVariant: 'light',            // More info about themeVariant: https://docs.mobiscroll.com/4-10-7/javascript/calendar#opt-themeVariant
+          display: 'bubble'                 // Specify display mode like: display: 'bottom' or omit setting to use default
+      };
+      
+      var now = new Date();
+      
+   
+      
+      mobiscroll.calendar('#calendar1', {
+          controls: ['calendar'],   // More info about controls: https://docs.mobiscroll.com/4-10-7/javascript/calendar#opt-controls
+          touchUi: false,                   // More info about touchUi: https://docs.mobiscroll.com/4-10-7/javascript/calendar#opt-touchUi
+          onInit: function (event, inst) {  // More info about onInit: https://docs.mobiscroll.com/4-10-7/javascript/calendar#event-onInit
+              inst.setVal(now, true);
+          }
+      });
+
+      mobiscroll.calendar('#calendar2', {
+          controls: ['calendar'],   // More info about controls: https://docs.mobiscroll.com/4-10-7/javascript/calendar#opt-controls
+          touchUi: false,                   // More info about touchUi: https://docs.mobiscroll.com/4-10-7/javascript/calendar#opt-touchUi
+          onInit: function (event, inst) {  // More info about onInit: https://docs.mobiscroll.com/4-10-7/javascript/calendar#event-onInit
+              inst.setVal(now, true);
+          }
+      });
+
+      
+    
+  </script>
+  
+</head>
+<body>
+ 
+    //MOSTRANDO DATOS EN EL BODY DE LA PAGINA
+    
+    <div class="container-fluid" id="listado" style="font-size: 5px;" >
+        <p></p><br>
+       <center><h1><img src="logo.png" width="75px" id="imgsereno2" style="position: relative;right: 15px; display: none;">Incidentes Puerto Maldonado</h1></center>
+        <p></p><br>
+        <h3>&nbsp;<font color="green">Número</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">Fecha</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;<font color="green">Hora</font>&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;<font color="green">Lugar de ocurrencia</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="green">Modalidad</font></h3>
+            <center><div class="loader" style="display: none;" id="loader"></div></center>
+    </div>
+
+</body>
+</html>
